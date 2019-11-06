@@ -1,0 +1,15 @@
+{
+    "log": {
+        "level": "INFO",
+        "development": false,
+        "path": ""
+    },
+    "rabbitmq": {
+        "123456789": {
+            "host": "",
+            "port": 12345,
+            "user": "",
+            "password": ""
+        }
+    }
+}
