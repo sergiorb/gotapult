@@ -25,7 +25,7 @@ func Init(path string) {
 
   if _, err := os.Stat(path); os.IsNotExist(err) {
 
-    panic(err)
+    panic("err")
 
   } else {
 
