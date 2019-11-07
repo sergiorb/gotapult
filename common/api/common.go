@@ -14,6 +14,13 @@ func LoadApi(group *gin.RouterGroup, apiFunctions []ApiFunction) {
 
   for _, apiFunction := range apiFunctions {
 
-    group.Handle(apiFunction.Method, apiFunction.Path, apiFunction.Handler)
+    if apiFunction.Method == "" {
+
+      group.Any(apiFunction.Path, apiFunction.Handler)
+
+    } else {
+
+      group.Handle(apiFunction.Method, apiFunction.Path, apiFunction.Handler)
+    }
   }
 }

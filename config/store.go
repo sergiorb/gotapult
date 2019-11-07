@@ -4,14 +4,14 @@ import (
   "os"
   "io/ioutil"
   "encoding/json"
-  rabbitmq "github.com/sergiorb/gotapult/rabbitmq/config"
+  catapults "github.com/sergiorb/gotapult/catapults/config"
 )
 
 var Store ConfigStore
 
 type ConfigStore struct {
-  Log           ConfigLogStore  `json:"log"`
-  Rabbitmq      rabbitmq.Config `json:"rabbitmq"`
+  Log       ConfigLogStore  `json:"log"`
+  Catapults catapults.Conf   `json:"catapults`
 }
 
 type ConfigLogStore struct {

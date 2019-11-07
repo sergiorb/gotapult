@@ -1,10 +1,10 @@
 package config
 
-type Config struct {
-  Servers	map[string]RabbitMqConf	`json:servers`
+type Conf struct {
+	Targets	map[string]Target	`json:"targets"`
 }
 
-type RabbitMqConf struct {
+type Target struct {
 	Host	string	`json:"host"`
 	Port	uint		`json:"port"`
 	User	string	`json:"user"`

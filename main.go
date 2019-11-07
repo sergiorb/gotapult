@@ -5,6 +5,7 @@ import (
   "github.com/gin-gonic/gin"
   "github.com/sergiorb/gotapult/config"
   "github.com/sergiorb/gotapult/logger"
+  "github.com/sergiorb/gotapult/catapults"
 
   log         "github.com/sirupsen/logrus"
   apiCommon   "github.com/sergiorb/gotapult/common/api"
@@ -23,6 +24,7 @@ func init() {
   flag.Parse()
   config.Init(*configPath)
   logger.Init()
+  catapults.Init(config.Store.Catapults)
 }
 
 func main() {

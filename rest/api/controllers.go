@@ -2,11 +2,10 @@ package api
 
 import (
   "github.com/gin-gonic/gin"
+  "github.com/sergiorb/gotapult/catapults"
 )
 
-func GetAllRelays(c *gin.Context) {
+func HttpCatapultLaunch(c *gin.Context) {
 
-  c.JSON(200, gin.H{
-    "objects": "",
-  })
+  catapults.Store.Http.Launch(c)
 }
