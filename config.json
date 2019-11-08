@@ -6,12 +6,6 @@
     "catapults": {
         "rabbitmq": {
             "targets": {
-                "123456789": {
-                    "host": "rabbitmq",
-                    "port": 5673,
-                    "user": "guest",
-                    "password": "guest"
-                },
                 "default": {
                     "host": "rabbitmq",
                     "port": 5672,
@@ -22,15 +16,10 @@
         },
         "http": {
             "targets": {
-                "123456789": {
-                    "schema": "http",
-                    "host": "localhost",
-                    "port": 8001
-                },
                 "default": {
                     "schema": "http",
                     "host": "localhost",
-                    "port": 1080
+                    "port": 8081
                 }
             }
         }

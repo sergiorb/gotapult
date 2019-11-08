@@ -2,52 +2,32 @@ package http
 
 import (
 	"fmt"
-	"net/http"
 	"net/url"
+	_ "strings"
+	_ "net/http"
 	"net/http/httputil"
 	"github.com/gin-gonic/gin"
 	"github.com/sergiorb/gotapult/catapults/http/config"
+	_ "github.com/sirupsen/logrus"
 )
-
-func Build(config config.Conf) *Catapult {
-
-	targets := make(map[string]Target)
- 
-	for k, v := range config.Targets {
-
-		targets[k] = Target{
-			Id: k,
-			Schema: v.Schema,
-			Host: v.Host,
-			Port: v.Port,
-			Url: fmt.Sprintf("%v://%v:%d", v.Schema, v.Host, v.Port),
-			Client: http.Client{},
-		}
-	}
-	
-	return &Catapult{
-		Targets: targets,
-	}
-}
 
 type Catapult struct {
 	Targets map[string]Target
 }
 
 type Target struct {
-	Id			string
+	Id		string
 	Schema	string
-	Host		string
-	Port		uint
-	Url			string
-	Client 	http.Client
+	Host	string
+	Port	uint
+	Client	*httputil.ReverseProxy
 }
 
 func (c* Catapult) GetTargetOrDefault(id string) *Target {
 	
 	if target, ok := c.Targets[id]; ok {
 
-    return &target;
+    	return &target;
 	}
 
 	defaultTaget := c.Targets["default"]
@@ -58,23 +38,36 @@ func (c* Catapult) GetTargetOrDefault(id string) *Target {
 func (c *Catapult) Launch(gc *gin.Context) {
 
 	id := gc.GetHeader("x-gotapult-id")
-	proxyPath := gc.Param("proxyPath")
+
+	path, err := url.Parse(gc.Param("proxyPath"))
+	if err != nil { panic(err) }
+
+	gc.Request.URL.Path = path.Path
 
 	target := c.GetTargetOrDefault(id)
 
-	fmt.Printf("%v%v\n", target.Url, proxyPath)
+	target.Client.ServeHTTP(gc.Writer, gc.Request)
+}
 
-	u, err := url.Parse(target.Url)
-	if err != nil { panic(err) }
+func Build(config config.Conf) *Catapult {
 
-	_, err = url.Parse(proxyPath)
-	if err != nil { panic(err) }
+	targets := make(map[string]Target)
+ 
+	for k, v := range config.Targets {
 
-	proxy := httputil.NewSingleHostReverseProxy(u)
+		url, err := url.Parse(fmt.Sprintf("%v://%v:%d", v.Schema, v.Host, v.Port))
+		if err != nil { panic(err) }
 
-	fmt.Printf("%v\n", gc.Request.URL)
-
-	// gc.Request.URL = e
-
-	proxy.ServeHTTP(gc.Writer, gc.Request)
+		targets[k] = Target{
+			Id: k,
+			Schema: v.Schema,
+			Host: v.Host,
+			Port: v.Port,
+			Client: httputil.NewSingleHostReverseProxy(url),
+		}
+	}
+	
+	return &Catapult{
+		Targets: targets,
+	}
 }
