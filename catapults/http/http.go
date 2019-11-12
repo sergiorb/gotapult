@@ -2,17 +2,23 @@ package http
 
 import (
 	"fmt"
+	"time"
 	"net/url"
 	_ "strings"
-	_ "net/http"
+	"net/http"
+	_ "context"
 	"net/http/httputil"
 	"github.com/gin-gonic/gin"
 	"github.com/sergiorb/gotapult/catapults/http/config"
+	"github.com/sergiorb/gotapult/catapults/http/event"
+	"github.com/sergiorb/gotapult/events"
+	"go.mongodb.org/mongo-driver/bson"
+	"github.com/sergiorb/gotapult/data"
 	_ "github.com/sirupsen/logrus"
 )
 
 type Catapult struct {
-	Targets map[string]Target
+	Targets 		map[string]Target
 }
 
 type Target struct {
@@ -49,6 +55,18 @@ func (c *Catapult) Launch(gc *gin.Context) {
 	target.Client.ServeHTTP(gc.Writer, gc.Request)
 }
 
+func ErrHandle(res http.ResponseWriter, req *http.Request, err error) {
+
+	_, err = data.Store.HttpEvents.InsertOne(data.Store.Ctx(), bson.M{
+		"timestamp": time.Now().UTC(), 
+		"err": err.Error(),
+	})
+
+  	if err != nil {
+    	fmt.Println(err)
+  	}
+}
+
 func Build(config config.Conf) *Catapult {
 
 	targets := make(map[string]Target)
@@ -58,12 +76,35 @@ func Build(config config.Conf) *Catapult {
 		url, err := url.Parse(fmt.Sprintf("%v://%v:%d", v.Schema, v.Host, v.Port))
 		if err != nil { panic(err) }
 
+		client := httputil.NewSingleHostReverseProxy(url)
+
+		client.ErrorHandler = func (res http.ResponseWriter, req *http.Request, err error) {
+
+			id := req.Header.Get("x-gotapult-id")
+
+			if id == "" {
+				id = "default"
+			}
+
+			_, err = data.Store.HttpEvents.InsertOne(data.Store.Ctx(), event.HttpEvent{
+				Timestamp:	time.Now().UTC(),
+				Err:		err.Error(),
+				Target:		events.Target{
+					Id:		id,
+				},
+			})
+		
+			if err != nil {
+				fmt.Println(err)
+			}
+		}
+
 		targets[k] = Target{
 			Id: k,
 			Schema: v.Schema,
 			Host: v.Host,
 			Port: v.Port,
-			Client: httputil.NewSingleHostReverseProxy(url),
+			Client: client,
 		}
 	}
 	

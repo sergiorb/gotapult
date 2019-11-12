@@ -6,6 +6,7 @@ import (
   "github.com/sergiorb/gotapult/config"
   "github.com/sergiorb/gotapult/logger"
   "github.com/sergiorb/gotapult/catapults"
+  "github.com/sergiorb/gotapult/data"
 
   log         "github.com/sirupsen/logrus"
   apiCommon   "github.com/sergiorb/gotapult/common/api"
@@ -24,6 +25,7 @@ func init() {
   flag.Parse()
   config.Init(*configPath)
   logger.Init()
+  data.Init()
   catapults.Init(config.Store.Catapults)
 }
 
