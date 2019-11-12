@@ -5,13 +5,15 @@ import (
   "io/ioutil"
   "encoding/json"
   catapults "github.com/sergiorb/gotapult/catapults/config"
+  data "github.com/sergiorb/gotapult/data/config"
 )
 
 var Store ConfigStore
 
 type ConfigStore struct {
   Log       ConfigLogStore  `json:"log"`
-  Catapults catapults.Conf   `json:"catapults`
+  Catapults catapults.Conf  `json:"catapults`
+  Data      data.Conf       `json:"data"`
 }
 
 type ConfigLogStore struct {

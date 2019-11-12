@@ -6,7 +6,7 @@ type Conf struct {
 
 type Target struct {
 	Host	string	`json:"host"`
-	Port	uint		`json:"port"`
+	Port	uint	`json:"port"`
 	User	string	`json:"user"`
 	Passw	string	`json:"password"`
 }

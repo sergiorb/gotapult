@@ -3,6 +3,11 @@
         "level": "INFO",
         "development": false
     },
+    "data": {
+        "host": "mongo",
+        "port": 27017,
+        "database": "gotapult"
+    },
     "catapults": {
         "rabbitmq": {
             "targets": {
@@ -18,7 +23,7 @@
             "targets": {
                 "default": {
                     "schema": "http",
-                    "host": "localhost",
+                    "host": "172.17.0.1",
                     "port": 8081
                 }
             }

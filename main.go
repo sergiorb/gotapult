@@ -25,7 +25,7 @@ func init() {
   flag.Parse()
   config.Init(*configPath)
   logger.Init()
-  data.Init()
+  data.Init(config.Store.Data)
   catapults.Init(config.Store.Catapults)
 }
 
